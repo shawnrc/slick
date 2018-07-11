@@ -22,7 +22,8 @@ import org.slf4j.event.Level
 fun main(args: Array<String>) {
   val port = System.getenv("PORT")?.toInt() ?: 8080
   val redisUrl = System.getenv("REDIS_URL") ?: "localhost"
-  val redis = RedisManager(redisUrl)
+  val redisKey = System.getenv("REDIS_KEY")
+  val redis = RedisManager(redisUrl, redisKey)
   val parser = Klaxon()
 
   embeddedServer(Netty, port) {
