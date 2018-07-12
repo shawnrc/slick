@@ -37,6 +37,7 @@ Thumbs.db
 
 # Gradle Files #
 ################
+gradle
 .gradle
 .m2
 
