@@ -59,9 +59,7 @@ fun main(args: Array<String>) {
           if (maybeUser == null) {
             call.respond(status = HttpStatusCode.NotFound, message = "")
           } else {
-            call.respondBytes(ContentType.Application.Json) {
-              maybeUser.toByteArray()
-            }
+            call.respondBytes(maybeUser, contentType = ContentType.Application.Json)
           }
         }
       }

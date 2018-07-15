@@ -12,13 +12,13 @@ class RedisManager(hostedAt: String, password: String? = null) {
 
   fun setUser(id: String, userBlob: String) {
     client.use {
-      it["users:$id"] = userBlob
+      it["users:$id".toByteArray()] = userBlob.toByteArray()
     }
   }
 
-  fun getUser(id: String): String? {
+  fun getUser(id: String): ByteArray? {
     return client.use {
-      it["users:$id"]
+      it["users:$id".toByteArray()]
     }
   }
 }
