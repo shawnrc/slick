@@ -16,13 +16,14 @@ plugins {
   id 'org.jetbrains.kotlin.jvm' version '1.2.51'
   id 'java'
   id 'application'
-  id 'com.github.johnrengelman.shadow' version '2.0.4'
 }
 
 group = 'me.shawnrc'
 mainClassName = 'me.shawnrc.slick.SlickKt'
 version = '1.0.0'
 sourceCompatibility = 1.8
+
+apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
   mavenCentral()
@@ -57,4 +58,8 @@ kotlin {
   experimental {
     coroutines "enable"
   }
+}
+
+wrapper {
+  gradleVersion = '4.8'
 }
