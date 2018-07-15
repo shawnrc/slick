@@ -6,6 +6,7 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.http.ContentType
+import io.ktor.http.HeaderValueParam
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.path
 import io.ktor.request.receiveText
@@ -18,6 +19,11 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import org.slf4j.event.Level
+
+private val APPLICATION_JSON_UTF8 = ContentType(
+    contentType = "application",
+    contentSubtype = "json",
+    parameters = listOf(HeaderValueParam("charset", Charsets.UTF_8.name().toLowerCase())))
 
 fun main(args: Array<String>) {
   val port = System.getenv("PORT")?.toInt() ?: 8080
@@ -44,13 +50,17 @@ fun main(args: Array<String>) {
             val profile = parser.parseJsonObject(blob.reader())
             val maybeId = profile.string("id")
             if (maybeId == null) {
-              call.respond(HttpStatusCode.BadRequest, "missing id field")
+              call.respond(HttpStatusCode.BadRequest, message = "missing id field")
             } else {
               redis.setUser(maybeId, blob)
-              call.respond(HttpStatusCode.Accepted)
+              val saved = redis.getUser(maybeId)
+              if (saved == null) {
+                call.respond(HttpStatusCode.BadRequest, message = "failed to store value")
+              } else {
+                call.respondBytes(saved, status = HttpStatusCode.Accepted)
+              }
             }
           }
-
         }
 
         get("{id}") {
@@ -59,7 +69,7 @@ fun main(args: Array<String>) {
           if (maybeUser == null) {
             call.respond(status = HttpStatusCode.NotFound, message = "")
           } else {
-            call.respondBytes(maybeUser, contentType = ContentType.Application.Json)
+            call.respondBytes(maybeUser, contentType = APPLICATION_JSON_UTF8)
           }
         }
       }
